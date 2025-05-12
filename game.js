@@ -1,7 +1,7 @@
 let config = {
     type: Phaser.AUTO,
-    width: 400,
-    height: 600,
+    width: window.innerWidth,
+    height: window.innerHeight,
     backgroundColor: '#1d3557',
     physics: {
         default: 'arcade',
@@ -18,7 +18,11 @@ let config = {
 
 let game = new Phaser.Game(config);
 
-let lanes = [80, 200, 320];
+let lanes = [
+    window.innerWidth * 0.25,
+    window.innerWidth * 0.5,
+    window.innerWidth * 0.75
+];
 let currentLane = 1;
 let barca;
 let ostacoli = [];
@@ -35,7 +39,7 @@ function preload() {
 
 function create() {
     // Barra centrale
-    barca = this.physics.add.sprite(lanes[currentLane], 520, 'barca');
+    barca = this.physics.add.sprite(lanes[currentLane], window.innerHeight - 80, 'barca');
     barca.setScale(0.25);
     barca.setCollideWorldBounds(true);
     barca.body.setImmovable(true);

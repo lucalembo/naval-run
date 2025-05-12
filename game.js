@@ -27,6 +27,7 @@ let score = 0;
 let counterText;
 let speed = 150;
 let lastKeyPressed = null;
+let spawnCooldown = 1000; // tempo iniziale tra le boe
 
 function preload() {
     this.load.image('barca', 'assets/barca.png');
@@ -34,8 +35,8 @@ function preload() {
 }
 
 function create() {
-    barca = this.physics.add.sprite(lanes[currentLane], 550, 'barca');
-    barca.setScale(0.25);
+    barca = this.physics.add.sprite(lanes[currentLane], 620, 'barca'); // un po' più alta
+    barca.setScale(0.2); // barca più piccola
     barca.setCollideWorldBounds(true);
     barca.body.setImmovable(true);
 
@@ -56,18 +57,28 @@ function create() {
         }
     });
 
+    // Generazione boe con distanziamento randomico
     this.time.addEvent({
-        delay: 1000,
+        delay: spawnCooldown,
         loop: true,
         callback: () => {
             let lane = Phaser.Math.Between(0, 2);
             let ostacolo = this.physics.add.sprite(lanes[lane], -30, 'boa');
-            ostacolo.setScale(0.1);
+            ostacolo.setScale(0.08); // boa più piccola
             ostacolo.body.setVelocityY(speed);
             ostacoli.push(ostacolo);
+
+            // Randomizza il prossimo tempo di spawn (tra 800ms e 1600ms)
+            spawnCooldown = Phaser.Math.Between(800, 1600);
+            this.time.addEvent({
+                delay: spawnCooldown,
+                callback: () => {}, // vuoto, serve solo per applicare il cooldown variabile
+                loop: false
+            });
         }
     });
 
+    // Aumento della velocità graduale ogni 5 secondi
     this.time.addEvent({
         delay: 5000,
         loop: true,
@@ -76,7 +87,7 @@ function create() {
         }
     });
 
-    // 🔧 Pausa ritardata correttamente chiusa
+    // Ritarda pausa iniziale per assicurare il disegno degli oggetti
     this.time.delayedCall(100, () => {
         this.scene.pause();
     });
@@ -105,17 +116,14 @@ function update() {
         let dy = o.y - barca.y;
 
         if (dx < 30 && dy > -80 && dy < 40) {
-         this.scene.pause();  // blocca tutto subito
-
-        this.time.delayedCall(100, () => {
-        score = 0;
-        speed = 150;
-        this.scene.restart(); // riavvia in sicurezza dopo 100ms
-        });
-
-         return false;
-      }
-
+            this.scene.pause();
+            this.time.delayedCall(100, () => {
+                score = 0;
+                speed = 150;
+                this.scene.restart();
+            });
+            return false;
+        }
 
         if (o.y > config.height) {
             o.destroy();
@@ -124,7 +132,7 @@ function update() {
 
             if (score === 20) {
                 document.getElementById("popup").style.display = "block";
-                game.scene.scenes[0].scene.pause();
+                this.scene.pause();
             }
 
             return false;
@@ -133,4 +141,3 @@ function update() {
         return true;
     });
 }
-

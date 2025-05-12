@@ -75,9 +75,12 @@ function create() {
             speed += 10;
         }
     });
+
+    // 🔧 Pausa ritardata correttamente chiusa
     this.time.delayedCall(100, () => {
-    this.scene.pause(); // gioco in pausa all'avvio
-});
+        this.scene.pause();
+    });
+}
 
 function update() {
     if ((cursors.left.isDown || keyA.isDown) && lastKeyPressed !== 'left') {
@@ -125,7 +128,3 @@ function update() {
     });
 }
 
-
-        return true;
-    });
-}

@@ -77,7 +77,7 @@ function create() {
     });
 
     this.time.addEvent({
-        delay: 350,
+        delay: 550,
         loop: true,
         callback: () => {
             speed += 10;

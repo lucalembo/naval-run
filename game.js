@@ -1,7 +1,7 @@
 let config = {
     type: Phaser.AUTO,
     width: 400,
-    height: 600,
+    height: 750,
     backgroundColor: '#1d3557',
     physics: {
         default: 'arcade',
@@ -34,7 +34,7 @@ function preload() {
 }
 
 function create() {
-    barca = this.physics.add.sprite(lanes[currentLane], 500, 'barca');
+    barca = this.physics.add.sprite(lanes[currentLane], 650, 'barca');
     barca.setScale(0.25);
     barca.setCollideWorldBounds(true);
     barca.body.setImmovable(true);

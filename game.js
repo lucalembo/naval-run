@@ -116,7 +116,7 @@ function update() {
             score++;
             counterText.setText("Ostacoli: " + score);
 
-            if (score === 15) {
+            if (score === 20) {
                 document.getElementById("popup").style.display = "block";
                 game.scene.scenes[0].scene.pause();
             }

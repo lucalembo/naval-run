@@ -75,9 +75,9 @@ function create() {
             speed += 10;
         }
     });
-
+    this.time.delayedCall(100, () => {
     this.scene.pause(); // gioco in pausa all'avvio
-}
+});
 
 function update() {
     if ((cursors.left.isDown || keyA.isDown) && lastKeyPressed !== 'left') {

@@ -1,7 +1,10 @@
+let gameWidth = window.innerWidth;
+let gameHeight = window.innerHeight;
+
 let config = {
     type: Phaser.AUTO,
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: gameWidth,
+    height: gameHeight,
     backgroundColor: '#1d3557',
     physics: {
         default: 'arcade',
@@ -19,10 +22,11 @@ let config = {
 let game = new Phaser.Game(config);
 
 let lanes = [
-    window.innerWidth * 0.25,
-    window.innerWidth * 0.5,
-    window.innerWidth * 0.75
+    gameWidth * 0.25,
+    gameWidth * 0.5,
+    gameWidth * 0.75
 ];
+
 let currentLane = 1;
 let barca;
 let ostacoli = [];
@@ -38,33 +42,28 @@ function preload() {
 }
 
 function create() {
-    // Barra centrale
-    barca = this.physics.add.sprite(lanes[currentLane], window.innerHeight - 80, 'barca');
+    barca = this.physics.add.sprite(lanes[currentLane], gameHeight - 100, 'barca');
     barca.setScale(0.25);
     barca.setCollideWorldBounds(true);
     barca.body.setImmovable(true);
 
-    // Punteggio
     counterText = this.add.text(10, 10, 'Ostacoli: 0', {
         fontSize: '20px',
         fill: '#ffffff'
     });
 
-    // Input da tastiera
     cursors = this.input.keyboard.createCursorKeys();
     keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
-    // Input da touch: sinistra/destra
     this.input.on('pointerdown', pointer => {
-        if (pointer.x < config.width / 2) {
+        if (pointer.x < gameWidth / 2) {
             if (currentLane > 0) currentLane--;
         } else {
             if (currentLane < 2) currentLane++;
         }
     });
 
-    // Ostacoli
     this.time.addEvent({
         delay: 1000,
         loop: true,
@@ -77,9 +76,8 @@ function create() {
         }
     });
 
-    // Aumento graduale velocità
     this.time.addEvent({
-        delay: 5000,
+        delay: 350,
         loop: true,
         callback: () => {
             speed += 10;
@@ -88,7 +86,6 @@ function create() {
 }
 
 function update() {
-    // Controlli tastiera
     if ((cursors.left.isDown || keyA.isDown) && lastKeyPressed !== 'left') {
         if (currentLane > 0) currentLane--;
         lastKeyPressed = 'left';
@@ -104,10 +101,8 @@ function update() {
         lastKeyPressed = null;
     }
 
-    // Allinea barca
     barca.x = lanes[currentLane];
 
-    // Gestione ostacoli
     ostacoli = ostacoli.filter(o => {
         let dx = Math.abs(barca.x - o.x);
         let dy = o.y - barca.y;
@@ -119,10 +114,11 @@ function update() {
             return false;
         }
 
-        if (o.y > 600) {
+        if (o.y > gameHeight) {
             o.destroy();
             score++;
             counterText.setText("Ostacoli: " + score);
+
             if (score === 30) {
                 document.getElementById("popup").style.display = "block";
                 game.scene.scenes[0].scene.pause();

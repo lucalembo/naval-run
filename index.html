@@ -11,9 +11,8 @@
             overflow: hidden;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+            align-items: center;
             height: 100vh;
-            padding-top: env(safe-area-inset-top, 20px);
         }
 
         canvas {
@@ -68,7 +67,7 @@
 
     <!-- SCHERMATA INIZIALE -->
     <div id="start-popup">
-        <h2>Benvenuto!<br>Schiva 20 ostacoli per sbloccare l'invito 🌊</h2>
+        <h2>Benvenuto!<br>Schiva 20 ostacoli per sbloccare l'invito 🌊🛟</h2>
         <p style="font-size: 15px; margin-top: 10px;">
             <strong>Computer:</strong> usa le frecce ← → <br>
             <strong>Mobile:</strong> premi a sinistra o destra dello schermo
@@ -84,12 +83,14 @@
 
     <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
-    <script src="game.js"></script>
     <script>
+        let giocoAttivo = false;
         function startGame() {
             document.getElementById("start-popup").style.display = "none";
-            game.scene.scenes[0].scene.resume();
+            giocoAttivo = true;
         }
     </script>
+    <script src="game.js"></script>
 </body>
 </html>
+

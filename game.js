@@ -3,8 +3,8 @@ let gameHeight = window.innerHeight;
 
 let config = {
     type: Phaser.AUTO,
-    width: gameWidth,
-    height: gameHeight,
+    width: 400,
+    height: 600,
     backgroundColor: '#1d3557',
     physics: {
         default: 'arcade',

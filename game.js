@@ -34,7 +34,7 @@ function preload() {
 }
 
 function create() {
-    barca = this.physics.add.sprite(lanes[currentLane], 650, 'barca');
+    barca = this.physics.add.sprite(lanes[currentLane], 550, 'barca');
     barca.setScale(0.25);
     barca.setCollideWorldBounds(true);
     barca.body.setImmovable(true);
@@ -69,7 +69,7 @@ function create() {
     });
 
     this.time.addEvent({
-        delay: 1000,
+        delay: 5000,
         loop: true,
         callback: () => {
             speed += 10;

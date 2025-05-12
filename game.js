@@ -28,7 +28,7 @@ let counterText;
 let speed = 150;
 let lastKeyPressed = null;
 let spawnCooldown = 1000;
-let collisioneAvvenuta = false; // ✅ nuovo flag
+let collisioneAvvenuta = false;
 
 function preload() {
     this.load.image('barca', 'assets/barca.png');
@@ -37,7 +37,7 @@ function preload() {
 
 function create() {
     barca = this.physics.add.sprite(lanes[currentLane], 620, 'barca');
-    barca.setScale(0.12); // ✅ barca ancora più piccola
+    barca.setScale(0.12);
     barca.setCollideWorldBounds(true);
     barca.body.setImmovable(true);
 
@@ -51,6 +51,7 @@ function create() {
     keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
     this.input.on('pointerdown', pointer => {
+        if (!giocoAttivo) return;
         if (pointer.x < config.width / 2) {
             if (currentLane > 0) currentLane--;
         } else {
@@ -62,13 +63,13 @@ function create() {
         delay: spawnCooldown,
         loop: true,
         callback: () => {
+            if (!giocoAttivo) return;
             let lane = Phaser.Math.Between(0, 2);
             let ostacolo = this.physics.add.sprite(lanes[lane], -30, 'boa');
             ostacolo.setScale(0.08);
             ostacolo.body.setVelocityY(speed);
             ostacoli.push(ostacolo);
 
-            // Spawn variabile
             spawnCooldown = Phaser.Math.Between(800, 1600);
             this.time.addEvent({
                 delay: spawnCooldown,
@@ -82,16 +83,14 @@ function create() {
         delay: 5000,
         loop: true,
         callback: () => {
-            speed += 10;
+            if (giocoAttivo) speed += 10;
         }
-    });
-
-    this.time.delayedCall(100, () => {
-        this.scene.pause();
     });
 }
 
 function update() {
+    if (!giocoAttivo) return;
+
     if ((cursors.left.isDown || keyA.isDown) && lastKeyPressed !== 'left') {
         if (currentLane > 0) currentLane--;
         lastKeyPressed = 'left';
@@ -113,10 +112,9 @@ function update() {
         let dx = Math.abs(barca.x - o.x);
         let dy = o.y - barca.y;
 
-        // ✅ Gestione sicura collisione
         if (dx < 30 && dy > -80 && dy < 40 && !collisioneAvvenuta) {
             collisioneAvvenuta = true;
-            this.scene.pause();
+            giocoAttivo = false;
             this.time.delayedCall(200, () => {
                 score = 0;
                 speed = 150;
@@ -126,7 +124,6 @@ function update() {
             return false;
         }
 
-        // Ostacolo superato
         if (o.y > config.height) {
             o.destroy();
             score++;
@@ -134,16 +131,11 @@ function update() {
 
             if (score === 20) {
                 document.getElementById("popup").style.display = "block";
-                this.scene.pause();
+                giocoAttivo = false;
             }
 
             return false;
         }
-
-        return true;
-    });
-}
-
 
         return true;
     });

@@ -27,7 +27,8 @@ let score = 0;
 let counterText;
 let speed = 150;
 let lastKeyPressed = null;
-let spawnCooldown = 1000; // tempo iniziale tra le boe
+let spawnCooldown = 1000;
+let collisioneAvvenuta = false; // ✅ nuovo flag
 
 function preload() {
     this.load.image('barca', 'assets/barca.png');
@@ -35,8 +36,8 @@ function preload() {
 }
 
 function create() {
-    barca = this.physics.add.sprite(lanes[currentLane], 620, 'barca'); // un po' più alta
-    barca.setScale(0.2); // barca più piccola
+    barca = this.physics.add.sprite(lanes[currentLane], 620, 'barca');
+    barca.setScale(0.12); // ✅ barca ancora più piccola
     barca.setCollideWorldBounds(true);
     barca.body.setImmovable(true);
 
@@ -57,28 +58,26 @@ function create() {
         }
     });
 
-    // Generazione boe con distanziamento randomico
     this.time.addEvent({
         delay: spawnCooldown,
         loop: true,
         callback: () => {
             let lane = Phaser.Math.Between(0, 2);
             let ostacolo = this.physics.add.sprite(lanes[lane], -30, 'boa');
-            ostacolo.setScale(0.08); // boa più piccola
+            ostacolo.setScale(0.08);
             ostacolo.body.setVelocityY(speed);
             ostacoli.push(ostacolo);
 
-            // Randomizza il prossimo tempo di spawn (tra 800ms e 1600ms)
+            // Spawn variabile
             spawnCooldown = Phaser.Math.Between(800, 1600);
             this.time.addEvent({
                 delay: spawnCooldown,
-                callback: () => {}, // vuoto, serve solo per applicare il cooldown variabile
+                callback: () => {},
                 loop: false
             });
         }
     });
 
-    // Aumento della velocità graduale ogni 5 secondi
     this.time.addEvent({
         delay: 5000,
         loop: true,
@@ -87,7 +86,6 @@ function create() {
         }
     });
 
-    // Ritarda pausa iniziale per assicurare il disegno degli oggetti
     this.time.delayedCall(100, () => {
         this.scene.pause();
     });
@@ -115,16 +113,20 @@ function update() {
         let dx = Math.abs(barca.x - o.x);
         let dy = o.y - barca.y;
 
-        if (dx < 30 && dy > -80 && dy < 40) {
+        // ✅ Gestione sicura collisione
+        if (dx < 30 && dy > -80 && dy < 40 && !collisioneAvvenuta) {
+            collisioneAvvenuta = true;
             this.scene.pause();
-            this.time.delayedCall(100, () => {
+            this.time.delayedCall(200, () => {
                 score = 0;
                 speed = 150;
+                collisioneAvvenuta = false;
                 this.scene.restart();
             });
             return false;
         }
 
+        // Ostacolo superato
         if (o.y > config.height) {
             o.destroy();
             score++;
@@ -137,6 +139,11 @@ function update() {
 
             return false;
         }
+
+        return true;
+    });
+}
+
 
         return true;
     });

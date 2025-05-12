@@ -1,10 +1,7 @@
-let gameWidth = window.innerWidth;
-let gameHeight = window.innerHeight;
-
 let config = {
     type: Phaser.AUTO,
     width: 400,
-    height: 800,
+    height: 600,
     backgroundColor: '#1d3557',
     physics: {
         default: 'arcade',
@@ -21,12 +18,7 @@ let config = {
 
 let game = new Phaser.Game(config);
 
-let lanes = [
-    gameWidth * 0.25,
-    gameWidth * 0.5,
-    gameWidth * 0.75
-];
-
+let lanes = [100, 200, 300];
 let currentLane = 1;
 let barca;
 let ostacoli = [];
@@ -42,8 +34,8 @@ function preload() {
 }
 
 function create() {
-    barca = this.physics.add.sprite(lanes[currentLane], gameHeight - 100, 'barca');
-    barca.setScale(gameWidth < 500 ? 0.18 : 0.25);
+    barca = this.physics.add.sprite(lanes[currentLane], 500, 'barca');
+    barca.setScale(0.25);
     barca.setCollideWorldBounds(true);
     barca.body.setImmovable(true);
 
@@ -57,7 +49,7 @@ function create() {
     keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
     this.input.on('pointerdown', pointer => {
-        if (pointer.x < gameWidth / 2) {
+        if (pointer.x < config.width / 2) {
             if (currentLane > 0) currentLane--;
         } else {
             if (currentLane < 2) currentLane++;
@@ -70,19 +62,21 @@ function create() {
         callback: () => {
             let lane = Phaser.Math.Between(0, 2);
             let ostacolo = this.physics.add.sprite(lanes[lane], -30, 'boa');
-            ostacolo.setScale(gameWidth < 500 ? 0.07 : 0.1);
+            ostacolo.setScale(0.1);
             ostacolo.body.setVelocityY(speed);
             ostacoli.push(ostacolo);
         }
     });
 
     this.time.addEvent({
-        delay: 550,
+        delay: 5000,
         loop: true,
         callback: () => {
             speed += 10;
         }
     });
+
+    this.scene.pause(); // gioco in pausa all'avvio
 }
 
 function update() {
@@ -114,17 +108,23 @@ function update() {
             return false;
         }
 
-        if (o.y > gameHeight) {
+        if (o.y > config.height) {
             o.destroy();
             score++;
             counterText.setText("Ostacoli: " + score);
 
-            if (score === 30) {
+            if (score === 15) {
                 document.getElementById("popup").style.display = "block";
                 game.scene.scenes[0].scene.pause();
             }
+
             return false;
         }
+
+        return true;
+    });
+}
+
 
         return true;
     });

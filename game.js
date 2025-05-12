@@ -57,7 +57,7 @@ function create() {
     });
 
     this.time.addEvent({
-        delay: 800,
+        delay: 1000,
         loop: true,
         callback: () => {
             let lane = Phaser.Math.Between(0, 2);
@@ -72,7 +72,7 @@ function create() {
         delay: 1000,
         loop: true,
         callback: () => {
-            speed += 15;
+            speed += 10;
         }
     });
 
@@ -105,11 +105,17 @@ function update() {
         let dy = o.y - barca.y;
 
         if (dx < 30 && dy > -80 && dy < 40) {
-            game.scene.scenes[0].scene.restart();
-            score = 0;
-            speed = 150;
-            return false;
-        }
+         this.scene.pause();  // blocca tutto subito
+
+        this.time.delayedCall(100, () => {
+        score = 0;
+        speed = 150;
+        this.scene.restart(); // riavvia in sicurezza dopo 100ms
+        });
+
+         return false;
+      }
+
 
         if (o.y > config.height) {
             o.destroy();

@@ -43,7 +43,7 @@ function preload() {
 
 function create() {
     barca = this.physics.add.sprite(lanes[currentLane], gameHeight - 100, 'barca');
-    barca.setScale(0.25);
+    barca.setScale(gameWidth < 500 ? 0.18 : 0.25);
     barca.setCollideWorldBounds(true);
     barca.body.setImmovable(true);
 
@@ -70,7 +70,7 @@ function create() {
         callback: () => {
             let lane = Phaser.Math.Between(0, 2);
             let ostacolo = this.physics.add.sprite(lanes[lane], -30, 'boa');
-            ostacolo.setScale(0.1);
+            ostacolo.setScale(gameWidth < 500 ? 0.07 : 0.1);
             ostacolo.body.setVelocityY(speed);
             ostacoli.push(ostacolo);
         }

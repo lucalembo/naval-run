@@ -57,7 +57,7 @@ function create() {
     });
 
     this.time.addEvent({
-        delay: 1000,
+        delay: 800,
         loop: true,
         callback: () => {
             let lane = Phaser.Math.Between(0, 2);
@@ -69,10 +69,10 @@ function create() {
     });
 
     this.time.addEvent({
-        delay: 5000,
+        delay: 1000,
         loop: true,
         callback: () => {
-            speed += 10;
+            speed += 15;
         }
     });
 

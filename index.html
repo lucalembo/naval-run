@@ -6,24 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <style>
         body {
-             margin: 0;
-             background: #1d3557;
-             overflow: hidden;
-             display: flex;
-             justify-content: center;
-             align-items: center;
-             height: 100vh;
-             }
+            margin: 0;
+            background: #1d3557;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            padding-top: env(safe-area-inset-top, 20px);
+        }
 
-      canvas {
-             width: 100%;
-             max-width: 400px;
-             height: auto;
-             }
+        canvas {
+            display: block;
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+        }
 
-
-        #popup {
-            display: none;
+        #popup, #start-popup {
             position: fixed;
             top: 30%;
             left: 50%;
@@ -46,19 +46,50 @@
             text-decoration: none;
             border-radius: 5px;
         }
+
+        #start-popup h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        #start-popup button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #1d3557;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-    <!-- POPUP INVITO -->
-    <div id="popup">
+    <!-- SCHERMATA INIZIALE -->
+    <div id="start-popup">
+        <h2>Benvenuto!<br>Schiva 15 ostacoli per sbloccare l'invito 🌊🛟</h2>
+        <p style="font-size: 15px; margin-top: 10px;">
+            <strong>Computer:</strong> usa le frecce ← → <br>
+            <strong>Mobile:</strong> premi a sinistra o destra dello schermo
+        </p>
+        <button onclick="startGame()">Inizia</button>
+    </div>
+
+    <!-- POPUP FINALE -->
+    <div id="popup" style="display: none;">
         <p style="font-size: 18px;">🎉 Complimenti! Clicca qui per scaricare l'invito:</p>
         <a href="assets/invito.png" download>Scarica Invito 🎓</a>
     </div>
 
-    <!-- GIOCO -->
+    <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
     <script src="game.js"></script>
+    <script>
+        function startGame() {
+            document.getElementById("start-popup").style.display = "none";
+            game.scene.scenes[0].scene.resume();
+        }
+    </script>
 </body>
 </html>
-

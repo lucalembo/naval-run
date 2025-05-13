@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Naval Endless Run - Invito</title>
+    <title>Naval Run - Sblocca l'invito</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <style>
         body {
@@ -22,7 +22,7 @@
             height: auto;
         }
 
-        #popup, #start-popup {
+        #popup, #start-popup, #retry-popup {
             position: fixed;
             top: 30%;
             left: 50%;
@@ -36,58 +36,59 @@
             z-index: 10;
         }
 
-        #popup a {
+        #popup a, #start-popup button, #retry-popup button {
             display: inline-block;
             margin-top: 10px;
             padding: 10px 20px;
             background: #1d3557;
             color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-
-        #start-popup h2 {
-            margin: 0;
-            font-size: 20px;
-        }
-
-        #start-popup button {
-            margin-top: 15px;
-            padding: 10px 20px;
-            font-size: 16px;
-            background: #1d3557;
-            color: white;
             border: none;
             border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
+            text-decoration: none;
+        }
+
+        #popup a {
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
 
-    <!-- SCHERMATA INIZIALE -->
+    <!-- Schermata iniziale -->
     <div id="start-popup">
-        <h2>Benvenuto!<br>Schiva 20 ostacoli per sbloccare l'invito 🌊🛟</h2>
-        <p style="font-size: 15px; margin-top: 10px;">
-            <strong>Computer:</strong> usa le frecce ← → <br>
-            <strong>Mobile:</strong> premi a sinistra o destra dello schermo
-        </p>
+        <h2>Guida la barca verso il traguardo 🌊</h2>
+        <p>Supera 30 barriere per sbloccare l’invito 🎓</p>
+        <p><strong>Computer:</strong> usa le frecce ← →<br><strong>Mobile:</strong> tocca a sinistra o destra</p>
         <button onclick="startGame()">Inizia</button>
     </div>
 
-    <!-- POPUP FINALE -->
+    <!-- Popup finale -->
     <div id="popup" style="display: none;">
         <p style="font-size: 18px;">🎉 Complimenti! Clicca qui per scaricare l'invito:</p>
         <a href="assets/invito.png" download>Scarica Invito 🎓</a>
     </div>
 
-    <!-- SCRIPTS -->
+    <!-- Popup riprova -->
+    <div id="retry-popup" style="display: none;">
+        <p style="font-size: 18px;">💥 Hai colpito una barriera!</p>
+        <button onclick="restartGame()">Riprova</button>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
     <script>
         let giocoAttivo = false;
         function startGame() {
             document.getElementById("start-popup").style.display = "none";
             giocoAttivo = true;
+        }
+        function restartGame() {
+            document.getElementById("retry-popup").style.display = "none";
+            giocoAttivo = true;
+            score = 0;
+            speed = 150;
+            game.scene.scenes[0].scene.restart();
         }
     </script>
     <script src="game.js"></script>

@@ -27,8 +27,8 @@ let score = 0;
 let counterText;
 let speed = 150;
 let lastKeyPressed = null;
-let spawnCooldown = 1000;
 let collisioneAvvenuta = false;
+let lastBarrierTime = 0;
 
 function preload() {
     this.load.image('barca', 'assets/barca.png');
@@ -36,12 +36,18 @@ function preload() {
 }
 
 function create() {
-    barca = this.physics.add.sprite(lanes[currentLane], 620, 'barca');
-    barca.setScale(0.12);
+    // ✅ Reset completo a ogni avvio
+    score = 0;
+    speed = 200;
+    ostacoli = [];
+    collisioneAvvenuta = false;
+
+    barca = this.physics.add.sprite(lanes[currentLane], 580, 'barca');
+    barca.setScale(0.2);
     barca.setCollideWorldBounds(true);
     barca.body.setImmovable(true);
 
-    counterText = this.add.text(10, 10, 'Ostacoli: 0', {
+    counterText = this.add.text(10, 10, 'Barriere: 0', {
         fontSize: '20px',
         fill: '#ffffff'
     });
@@ -59,31 +65,34 @@ function create() {
         }
     });
 
+    // 🛟 Barriere con varco centrale
     this.time.addEvent({
-        delay: spawnCooldown,
+        delay: 650,
         loop: true,
         callback: () => {
-            if (!giocoAttivo) return;
-            let lane = Phaser.Math.Between(0, 2);
-            let ostacolo = this.physics.add.sprite(lanes[lane], -30, 'boa');
-            ostacolo.setScale(0.08);
-            ostacolo.body.setVelocityY(speed);
-            ostacoli.push(ostacolo);
+            if (!giocoAttivo || this.time.now - lastBarrierTime < 1200) return;
 
-            spawnCooldown = Phaser.Math.Between(800, 1600);
-            this.time.addEvent({
-                delay: spawnCooldown,
-                callback: () => {},
-                loop: false
-            });
+            let corsiaLibera = Phaser.Math.Between(0, 2);
+
+            for (let i = 0; i < 3; i++) {
+                if (i !== corsiaLibera) {
+                    let boa = this.physics.add.sprite(lanes[i], -30, 'boa');
+                    boa.setScale(0.09);
+                    boa.body.setVelocityY(speed);
+                    ostacoli.push(boa);
+                }
+            }
+
+            lastBarrierTime = this.time.now;
         }
     });
 
+    // Velocità che aumenta gradualmente
     this.time.addEvent({
-        delay: 5000,
+        delay: 3500,
         loop: true,
         callback: () => {
-            if (giocoAttivo) speed += 10;
+            if (giocoAttivo) speed += 5;
         }
     });
 }
@@ -112,24 +121,33 @@ function update() {
         let dx = Math.abs(barca.x - o.x);
         let dy = o.y - barca.y;
 
-        if (dx < 30 && dy > -80 && dy < 40 && !collisioneAvvenuta) {
+        // ✅ Collisione gestita correttamente
+        if (!collisioneAvvenuta && dx < 30 && dy > -40 && dy < 40) {
             collisioneAvvenuta = true;
             giocoAttivo = false;
-            this.time.delayedCall(200, () => {
-                score = 0;
-                speed = 150;
-                collisioneAvvenuta = false;
-                this.scene.restart();
+
+            // Rimuovi tutte le boe in scena
+            ostacoli.forEach(b => b.destroy());
+            ostacoli = [];
+
+            this.time.delayedCall(50, () => {
+                document.getElementById("retry-popup").style.display = "block";
             });
+
             return false;
         }
 
+        // Se supera il fondo → barriera superata
         if (o.y > config.height) {
             o.destroy();
-            score++;
-            counterText.setText("Ostacoli: " + score);
 
-            if (score === 20) {
+            if (!o.counted) {
+                score++;
+                counterText.setText("Barriere: " + score);
+                o.counted = true;
+            }
+
+            if (score >= 30 && giocoAttivo) {
                 document.getElementById("popup").style.display = "block";
                 giocoAttivo = false;
             }
